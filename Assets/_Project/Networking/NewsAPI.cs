@@ -8,54 +8,53 @@ using UnityEngine.UI;
 public class NewsAPI : MonoBehaviour
 {
 
-    private string URL = "http://localhost:3000/news/getScripts?limit=10&skip=0";
-    private PlayerData playerData;
+    private string URL = "http://localhost:3000/news/getScripts?limit=2&skip=0";
+    //private PlayerData playerData;
     private string path = "";
     private string persistentPath = "";
-    public Text Response;
+    
+    //public Text Response;
 
     // Start is called before the first frame update
     void Start()
     {
-        // SetPaths();
-        // StartCoroutine(SetPaths());
         StartCoroutine(GetData());
-        
+        // SetPaths();
         //CreatePlayerData();
         //SaveData();
     }
 
-    private void CreatePlayerData()
-    {
-        playerData = new PlayerData("Nico", 200f, 10f, 3);
-    }
+    // private void CreatePlayerData()
+    // {
+    //     playerData = new PlayerData("Nico", 200f, 10f, 3);
+    // }
 
-    private void SetPaths()
-    {
-        path = Application.dataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
-        persistentPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
-    }
+    // private void SetPaths()
+    // {
+    //     path = Application.dataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
+    //     persistentPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
+    // }
 
-   public void SaveData()
-    {
-        string savePath = path;
+//    public void SaveData()
+//     {
+//         string savePath = path;
 
-        Debug.Log("Saving Data at " + savePath);
-        string json = JsonUtility.ToJson(playerData);
-        Debug.Log(json);
+//         Debug.Log("Saving Data at " + savePath);
+//         string json = JsonUtility.ToJson(playerData);
+//         Debug.Log(json);
 
-        using StreamWriter writer = new StreamWriter(savePath);
-        writer.Write(json);
-    }
+//         using StreamWriter writer = new StreamWriter(savePath);
+//         writer.Write(json);
+//     }
 
-    public void LoadData()
-    {
-        using StreamReader reader = new StreamReader(persistentPath);
-        string json = reader.ReadToEnd();
+    // public void LoadData()
+    // {
+    //     using StreamReader reader = new StreamReader(persistentPath);
+    //     string json = reader.ReadToEnd();
 
-        PlayerData data = JsonUtility.FromJson<PlayerData>(json);
-        Debug.Log(data.ToString());
-    }
+    //     PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+    //     Debug.Log(data.ToString());
+    // }
 
     // Update is called once per frame
     // void Update()
@@ -82,20 +81,17 @@ public class NewsAPI : MonoBehaviour
             else
             {
                 string json = request.downloadHandler.text;
-                SimpleJSON.JSONNode information = SimpleJSON.JSON.Parse(json);
-
-                Debug.Log("News Response: " + json);
+                //SimpleJSON.JSONNode information = SimpleJSON.JSON.Parse(json);
+                Debug.Log("News Response: ");
+                Debug.Log(json);
 
                 string savePath = path;
+                using StreamWriter writer = new StreamWriter(savePath);
+                writer.Write(json);
+                Debug.Log("Saving Data at: ");
+                Debug.Log(savePath);
 
-                Debug.Log("Saving Data at " + savePath);
-                //string json = JsonUtility.ToJson(playerData);
-                Debug.Log(information);
-
-                // using StreamWriter writer = new StreamWriter(information);
-                // writer.Write(information);
-
-                Response.text = information;
+                //Response.text = information;
             }
         }
     }
