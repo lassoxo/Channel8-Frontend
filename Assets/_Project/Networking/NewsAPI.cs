@@ -8,16 +8,18 @@ using UnityEngine.UI;
 public class NewsAPI : MonoBehaviour
 {
 
-    private string URL = "http://localhost:3000/news/getScripts?limit=2&skip=0";
+    private string URL = "http://localhost:3000/news/getScripts?limit=1&skip=0";
     //private PlayerData playerData;
     private string path = "";
     private string persistentPath = "";
-    
+
     //public Text Response;
 
     // Start is called before the first frame update
     void Start()
     {
+        path = Application.dataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
+        persistentPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
         StartCoroutine(GetData());
         // SetPaths();
         //CreatePlayerData();
@@ -68,10 +70,6 @@ public class NewsAPI : MonoBehaviour
 
     IEnumerator GetData()
     {
-
-        path = Application.dataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
-        persistentPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
-
         using(UnityWebRequest request= UnityWebRequest.Get(URL))
         {
             yield return request.SendWebRequest();
