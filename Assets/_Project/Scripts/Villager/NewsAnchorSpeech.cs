@@ -7,21 +7,23 @@ using UnityEngine.UI;
 
 public class NewsAnchorSpeech : MonoBehaviour
 {
-    private string URL = "http://localhost:3000/news/getScripts?limit=1&skip=0";
-    private string path = "";
-    private string persistentPath = "";
+    private int Limit = 2;
+    private string URL;
+    private string path;
+    private string persistentPath;
     private bool FirstTimeLoading = true;
     private bool Cached = false;
     private bool Loaded = false;
     private SimpleJSON.JSONNode information;
-    private int NewsTopics = 0;
+    private int TotalNewsTopics = 0;
     private int CurrentNewsTopic = 0;
-    private int CurrentNewsConversationThreads = 0;
-    private int CurrentNewsCurrentConversationThread = 0;
+    private int CumulativeNewsTopics = 0;
 
     // Start is called before the first frame update
     void Start()
     {   
+        // Initial URL
+        URL = "http://localhost:3000/news/getScripts?limit=" + Limit.ToString() + "&skip=0";
         // File path for debugging
         path = Application.dataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
         // File path for production
@@ -43,6 +45,9 @@ public class NewsAnchorSpeech : MonoBehaviour
         // If file have stuff in it & loaded === false then -> use load data method to cache data and update loaded === true & delete the file
         if (System.IO.File.ReadAllText(persistentPath) != "" && Cached == false)
         {
+            //Update URL considering CumulativeNewsTopics
+            CumulativeNewsTopics = CumulativeNewsTopics + Limit;
+            URL = "http://localhost:3000/news/getScripts?limit=" + Limit.ToString() + "&skip=" + CumulativeNewsTopics.ToString();
             LoadData();
             Cached = true;
             Loaded = false;
@@ -58,8 +63,8 @@ public class NewsAnchorSpeech : MonoBehaviour
             Loaded = true;
         }
 
-        // If currentnewstopics === newstopics then make cached == false && reset news count to 0
-        if (CurrentNewsTopic == NewsTopics && Cached == true)
+        // If currentnewstopics === totalnewstopics then make cached == false && reset news count to 0
+        if (CurrentNewsTopic == TotalNewsTopics && Cached == true)
         {
             Cached = false;
             CurrentNewsTopic = 0;
@@ -79,16 +84,16 @@ public class NewsAnchorSpeech : MonoBehaviour
                 Debug.LogError(request.error);
             else
             {
-                string json = request.downloadHandler.text;
+                string Json = request.downloadHandler.text;
                 Debug.Log("News Response: ");
-                Debug.Log(json);
+                Debug.Log(Json);
 
                 // Save the data to a file
-                string savePath = persistentPath;
-                using StreamWriter writer = new StreamWriter(savePath);
-                writer.Write(json);
+                string SavePath = persistentPath;
+                using StreamWriter writer = new StreamWriter(SavePath);
+                writer.Write(Json);
                 Debug.Log("Saving Data at: ");
-                Debug.Log(savePath);
+                Debug.Log(SavePath);
             }
         }
     }
@@ -98,22 +103,22 @@ public class NewsAnchorSpeech : MonoBehaviour
         using StreamReader reader = new StreamReader(persistentPath);
         string json = reader.ReadToEnd();
         information = SimpleJSON.JSON.Parse(json);        
-        NewsTopics = int.Parse(information["count"].Value);
+        TotalNewsTopics = int.Parse(information["count"].Value);
 
         Debug.Log("Cached News Response: ");
         Debug.Log(information);
 
-        CurrentNewsConversationThreads = information["scripts"][CurrentNewsTopic]["lines"].Count;
+        StartCoroutine(DownloadAndPlayAudioSequentially());
 
-        // Conversation generation on a loop
-        for (int i = 0; i < CurrentNewsConversationThreads; i++)
-        {
-            Debug.Log("current on: " + i);
-            StartCoroutine(DownloadAudio(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"].Value)); 
-            // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["name"]);
-            // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["text"]);
-            // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"]);
-        }
+        // // Conversation generation on a loop
+        // for (int i = 0; i < CurrentNewsConversationThreads; i++)
+        // {
+        //     Debug.Log("current on: " + i);
+        //     StartCoroutine(DownloadAndPlayAudio(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"].Value)); 
+        //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["name"]);
+        //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["text"]);
+        //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"]);
+        // }
 
         // string actionTwo = information["scripts"][0]["lines"][0]["name"].Value;
         // string actionTwo = information["scripts"][0]["lines"].Count;
@@ -133,15 +138,38 @@ public class NewsAnchorSpeech : MonoBehaviour
         // }
     }
 
-    IEnumerator DownloadAudio(string url)
+    IEnumerator DownloadAndPlayAudioSequentially()
     {
-        Debug.Log("Audio Being Played: ");
-        Debug.Log(url);
 
-        WWW www = new WWW(url);
-        yield return www;
-        AudioSource audio = GetComponent<AudioSource>();
-        audio.clip = www.GetAudioClip(false, true,AudioType.MPEG);
-        audio.Play();
+        // yield return null;
+
+        //1.Loop through each AudioClip
+        for (int i = 0; i < TotalNewsTopics;)
+        {
+            for (int j = 0; j < information["scripts"][i]["lines"].Count; j++)
+            {
+                //2.Assign current AudioClip to audiosource            
+                WWW www = new WWW(information["scripts"][i]["lines"][j]["fileUrl"].Value);
+                yield return www;
+                AudioSource audio = GetComponent<AudioSource>();
+                audio.clip = www.GetAudioClip(false, true,AudioType.MPEG);
+
+                //3.Play Audio
+                audio.Play();
+                Debug.Log("Audio Being Played: ");
+                Debug.Log(information["scripts"][i]["lines"][j]["fileUrl"].Value);
+
+                //4.Wait for it to finish playing
+                while (audio.isPlaying)
+                {
+                    yield return null;
+                }
+
+                //5. Go back to #2 and play the next audio in the adClips array
+            }
+            i++;
+            CurrentNewsTopic = i;            
+        }
+        CumulativeNewsTopics = CumulativeNewsTopics + Limit;
     }
 }
