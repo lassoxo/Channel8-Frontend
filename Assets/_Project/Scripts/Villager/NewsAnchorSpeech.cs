@@ -110,27 +110,6 @@ public class NewsAnchorSpeech : MonoBehaviour
         Debug.Log(information);
 
         StartCoroutine(DownloadAndPlayAudioSequentially());
-
-        // // Conversation generation on a loop
-        // for (int i = 0; i < CurrentNewsConversationThreads; i++)
-        // {
-        //     Debug.Log("current on: " + i);
-        //     StartCoroutine(DownloadAndPlayAudio(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"].Value)); 
-        //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["name"]);
-        //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["text"]);
-        //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"]);
-        // }
-        // foreach (SimpleJSON.JSONNode item in information["scripts"].AsArray)
-        // {
-        //     //Debug.Log(item["lines"][0]["name"]);
-        //     //do another foreach loop here to get the rest of the data
-        //     foreach (SimpleJSON.JSONNode itemTwo in item["lines"].AsArray)
-        //     {
-        //         Debug.Log(itemTwo["name"]);
-        //         Debug.Log(itemTwo["text"]);
-        //         Debug.Log(itemTwo["fileUrl"]);
-        //     }
-        // }
     }
 
     IEnumerator DownloadAndPlayAudioSequentially()
