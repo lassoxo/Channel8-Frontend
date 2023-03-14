@@ -64,7 +64,6 @@ public class NewsAnchorSpeech : MonoBehaviour
         }
     }
 
-    // download the respective audio matching the script
     // if the audio match the name of the character the character then will play the audio with relevant emotion
     // other characters in the anchor room will face the talking character on idle
 
@@ -101,7 +100,16 @@ public class NewsAnchorSpeech : MonoBehaviour
 
         Debug.Log("Cached News Response: ");
         Debug.Log(information);
-        StartCoroutine(DownloadAudio(information["scripts"][0]["lines"][0]["fileUrl"].Value));  
+
+        CurrentNewsConversationThreads = information["scripts"][CurrentNewsTopic]["lines"].Count;
+        
+        for (int i = 0; i < CurrentNewsConversationThreads; i++)
+        {
+            StartCoroutine(DownloadAudio(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"].Value)); 
+            // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["name"]);
+            // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["text"]);
+            // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"]);
+        }
 
         // string actionTwo = information["scripts"][0]["lines"][0]["name"].Value;
         // string actionTwo = information["scripts"][0]["lines"].Count;
