@@ -37,17 +37,17 @@ public class NewsAPI : MonoBehaviour
     //     persistentPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
     // }
 
-//    public void SaveData()
-//     {
-//         string savePath = path;
+    // public void SaveData()
+    // {
+    //     string savePath = path;
 
-//         Debug.Log("Saving Data at " + savePath);
-//         string json = JsonUtility.ToJson(playerData);
-//         Debug.Log(json);
+    //     Debug.Log("Saving Data at " + savePath);
+    //     string json = JsonUtility.ToJson(playerData);
+    //     Debug.Log(json);
 
-//         using StreamWriter writer = new StreamWriter(savePath);
-//         writer.Write(json);
-//     }
+    //     using StreamWriter writer = new StreamWriter(savePath);
+    //     writer.Write(json);
+    // }
 
     // public void LoadData()
     // {
