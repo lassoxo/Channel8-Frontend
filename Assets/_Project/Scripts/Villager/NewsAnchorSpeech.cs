@@ -19,9 +19,13 @@ public class NewsAnchorSpeech : MonoBehaviour
     {
         using StreamReader reader = new StreamReader(path);
         string json = reader.ReadToEnd();
+        SimpleJSON.JSONNode information = SimpleJSON.JSON.Parse(json);
+        string action = information["count"].Value;
         //var data = JsonConvert.DeserializeObject<Root>(json);
         //Root data = JsonUtility.FromJson<Root>(json.count);
-        Debug.Log(json);
+        //Root data = JsonConvert.DeserializeObject<Root>(json);
+
+        Debug.Log(action);
     }
 
     // pull a list of scripts from the json file
