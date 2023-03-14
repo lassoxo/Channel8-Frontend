@@ -21,33 +21,35 @@ public class NewsAnchorSpeech : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
+    {   
+        // File path for debugging
         path = Application.dataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
-        persistentPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
+        // File path for production
+        persistentPath = Application.persistentDataPath + Path.AltDirectorySeparatorChar + "NewsData.json";
         StartCoroutine(GetData());
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if first time loading = true then clear news data.json then make first time loading false
+        // If first time loading = true then clear news data.json then make first time loading false
         if (FirstTimeLoading == true)
         {
-            //clear news data.json
-            System.IO.File.WriteAllText(path, string.Empty);
+            // Clear news data.json
+            System.IO.File.WriteAllText(persistentPath, string.Empty);
             FirstTimeLoading = false;
         }
 
-        //if file have stuff in it & loaded === false then -> use load data method to cache data and update loaded === true & delete the file
-        if (System.IO.File.ReadAllText(path) != "" && Cached == false)
+        // If file have stuff in it & loaded === false then -> use load data method to cache data and update loaded === true & delete the file
+        if (System.IO.File.ReadAllText(persistentPath) != "" && Cached == false)
         {
             LoadData();
             Cached = true;
             Loaded = false;
-            System.IO.File.WriteAllText(path, string.Empty);
+            System.IO.File.WriteAllText(persistentPath, string.Empty);
         }
 
-        //if cached == true & loaded == false then get data & make loaded == true
+        // If cached == true & loaded == false then get data & make loaded == true
         if (Cached == true && Loaded == false)
         {
             //get news data
@@ -56,7 +58,7 @@ public class NewsAnchorSpeech : MonoBehaviour
             Loaded = true;
         }
 
-        //if currentnewstopics === newstopics then make cached == false && reset news count to 0
+        // If currentnewstopics === newstopics then make cached == false && reset news count to 0
         if (CurrentNewsTopic == NewsTopics && Cached == true)
         {
             Cached = false;
@@ -81,8 +83,8 @@ public class NewsAnchorSpeech : MonoBehaviour
                 Debug.Log("News Response: ");
                 Debug.Log(json);
 
-                //Save the data to a file
-                string savePath = path;
+                // Save the data to a file
+                string savePath = persistentPath;
                 using StreamWriter writer = new StreamWriter(savePath);
                 writer.Write(json);
                 Debug.Log("Saving Data at: ");
@@ -93,7 +95,7 @@ public class NewsAnchorSpeech : MonoBehaviour
 
     public void LoadData()
     {
-        using StreamReader reader = new StreamReader(path);
+        using StreamReader reader = new StreamReader(persistentPath);
         string json = reader.ReadToEnd();
         information = SimpleJSON.JSON.Parse(json);        
         NewsTopics = int.Parse(information["count"].Value);
@@ -103,6 +105,7 @@ public class NewsAnchorSpeech : MonoBehaviour
 
         CurrentNewsConversationThreads = information["scripts"][CurrentNewsTopic]["lines"].Count;
         
+        // Conversation generation on a loop
         for (int i = 0; i < CurrentNewsConversationThreads; i++)
         {
             StartCoroutine(DownloadAudio(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"].Value)); 
