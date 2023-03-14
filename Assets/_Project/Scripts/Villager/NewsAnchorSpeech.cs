@@ -98,9 +98,10 @@ public class NewsAnchorSpeech : MonoBehaviour
         string json = reader.ReadToEnd();
         information = SimpleJSON.JSON.Parse(json);        
         NewsTopics = int.Parse(information["count"].Value);
-        
+
         Debug.Log("Cached News Response: ");
         Debug.Log(information);
+        StartCoroutine(DownloadAudio(information["scripts"][0]["lines"][0]["fileUrl"].Value));  
 
         // string actionTwo = information["scripts"][0]["lines"][0]["name"].Value;
         // string actionTwo = information["scripts"][0]["lines"].Count;
@@ -118,5 +119,14 @@ public class NewsAnchorSpeech : MonoBehaviour
         //     //check the length of item["lines"] to see how many lines there are
         //     //Debug.Log(item["lines"].Count);
         // }
+    }
+
+    IEnumerator DownloadAudio(string url)
+    {
+        WWW www = new WWW(url);
+        yield return www;
+        AudioSource audio = GetComponent<AudioSource>();
+        audio.clip = www.GetAudioClip(false, true,AudioType.MPEG);
+        audio.Play();
     }
 }
