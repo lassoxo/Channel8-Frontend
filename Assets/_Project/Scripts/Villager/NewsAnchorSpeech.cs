@@ -7,14 +7,15 @@ using UnityEngine.UI;
 
 public class NewsAnchorSpeech : MonoBehaviour
 {
-    private int Limit = 2;
-    private string URL;
+    private int newsLimit = 2; // Number of news topics to load at a time (Adjustable)
+    private string url;
     private string path;
     private string persistentPath;
+    private SimpleJSON.JSONNode information;
+
     private bool FirstTimeLoading = true;
     private bool Cached = false;
     private bool Loaded = false;
-    private SimpleJSON.JSONNode information;
     private int TotalNewsTopics = 0;
     private int CurrentNewsTopic = 0;
     private int CumulativeNewsTopics = 0;
@@ -22,8 +23,8 @@ public class NewsAnchorSpeech : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {   
-        // Initial URL
-        URL = "http://localhost:3000/news/getScripts?limit=" + Limit.ToString() + "&skip=0";
+        // Initial url
+        url = "http://localhost:3000/news/getScripts?limit=" + newsLimit.ToString() + "&skip=0";
         // File path for debugging
         path = Application.dataPath + Path.AltDirectorySeparatorChar + "_Project/Data/" + "NewsData.json";
         // File path for production
@@ -45,9 +46,9 @@ public class NewsAnchorSpeech : MonoBehaviour
         // If file have stuff in it & loaded === false then -> use load data method to cache data and update loaded === true & delete the file
         if (System.IO.File.ReadAllText(persistentPath) != "" && Cached == false)
         {
-            //Update URL considering CumulativeNewsTopics
-            CumulativeNewsTopics = CumulativeNewsTopics + Limit;
-            URL = "http://localhost:3000/news/getScripts?limit=" + Limit.ToString() + "&skip=" + CumulativeNewsTopics.ToString();
+            //Update url considering CumulativeNewsTopics
+            CumulativeNewsTopics = CumulativeNewsTopics + newsLimit;
+            url = "http://localhost:3000/news/getScripts?limit=" + newsLimit.ToString() + "&skip=" + CumulativeNewsTopics.ToString();
             LoadData();
             Cached = true;
             Loaded = false;
@@ -76,7 +77,7 @@ public class NewsAnchorSpeech : MonoBehaviour
 
     IEnumerator GetData()
     {
-        using(UnityWebRequest request= UnityWebRequest.Get(URL))
+        using(UnityWebRequest request= UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
 
@@ -140,9 +141,6 @@ public class NewsAnchorSpeech : MonoBehaviour
 
     IEnumerator DownloadAndPlayAudioSequentially()
     {
-
-        // yield return null;
-
         //1.Loop through each AudioClip
         for (int i = 0; i < TotalNewsTopics;)
         {
@@ -170,6 +168,6 @@ public class NewsAnchorSpeech : MonoBehaviour
             i++;
             CurrentNewsTopic = i;            
         }
-        CumulativeNewsTopics = CumulativeNewsTopics + Limit;
+        CumulativeNewsTopics = CumulativeNewsTopics + newsLimit;
     }
 }
