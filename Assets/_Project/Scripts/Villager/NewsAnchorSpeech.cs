@@ -120,10 +120,6 @@ public class NewsAnchorSpeech : MonoBehaviour
         //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["text"]);
         //     // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"]);
         // }
-
-        // string actionTwo = information["scripts"][0]["lines"][0]["name"].Value;
-        // string actionTwo = information["scripts"][0]["lines"].Count;
-
         // foreach (SimpleJSON.JSONNode item in information["scripts"].AsArray)
         // {
         //     //Debug.Log(item["lines"][0]["name"]);
@@ -134,8 +130,6 @@ public class NewsAnchorSpeech : MonoBehaviour
         //         Debug.Log(itemTwo["text"]);
         //         Debug.Log(itemTwo["fileUrl"]);
         //     }
-        //     //check the length of item["lines"] to see how many lines there are
-        //     //Debug.Log(item["lines"].Count);
         // }
     }
 
