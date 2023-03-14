@@ -20,12 +20,29 @@ public class NewsAnchorSpeech : MonoBehaviour
         using StreamReader reader = new StreamReader(path);
         string json = reader.ReadToEnd();
         SimpleJSON.JSONNode information = SimpleJSON.JSON.Parse(json);
-        string action = information["count"].Value;
+        // string action = information["count"].Value;
+        // string actionTwo = information["scripts"][0]["lines"][0]["name"].Value;
+        foreach (SimpleJSON.JSONNode item in information["scripts"].AsArray)
+        {
+            //Debug.Log(item["lines"][0]["name"]);
+            //do another foreach loop here to get the rest of the data
+            foreach (SimpleJSON.JSONNode itemTwo in item["lines"].AsArray)
+            {
+                Debug.Log(itemTwo["name"]);
+                Debug.Log(itemTwo["text"]);
+                Debug.Log(itemTwo["fileUrl"]);
+            }
+        }
+
+        //string actionTwo = information["scripts"].Value;
+
+
+        //Testdata = JsonUtility.FromJson<Root>(json);
         //var data = JsonConvert.DeserializeObject<Root>(json);
         //Root data = JsonUtility.FromJson<Root>(json.count);
         //Root data = JsonConvert.DeserializeObject<Root>(json);
 
-        Debug.Log(action);
+        //Debug.Log(actionTwo);
     }
 
     // pull a list of scripts from the json file
@@ -38,5 +55,9 @@ public class NewsAnchorSpeech : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.L))
             LoadData();
+        
+        //clear news data.json
+        //if file is cleared then don't load data
+        //if file have stuff in it then load data & update unique value
     }
 }
