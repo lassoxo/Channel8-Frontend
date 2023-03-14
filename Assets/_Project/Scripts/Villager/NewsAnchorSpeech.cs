@@ -104,10 +104,11 @@ public class NewsAnchorSpeech : MonoBehaviour
         Debug.Log(information);
 
         CurrentNewsConversationThreads = information["scripts"][CurrentNewsTopic]["lines"].Count;
-        
+
         // Conversation generation on a loop
         for (int i = 0; i < CurrentNewsConversationThreads; i++)
         {
+            Debug.Log("current on: " + i);
             StartCoroutine(DownloadAudio(information["scripts"][CurrentNewsTopic]["lines"][i]["fileUrl"].Value)); 
             // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["name"]);
             // Debug.Log(information["scripts"][CurrentNewsTopic]["lines"][i]["text"]);
@@ -134,6 +135,9 @@ public class NewsAnchorSpeech : MonoBehaviour
 
     IEnumerator DownloadAudio(string url)
     {
+        Debug.Log("Audio Being Played: ");
+        Debug.Log(url);
+
         WWW www = new WWW(url);
         yield return www;
         AudioSource audio = GetComponent<AudioSource>();
