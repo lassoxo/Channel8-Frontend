@@ -41,6 +41,7 @@ public class NewsAnchorSpeech : MonoBehaviour
             // Clear news data.json
             System.IO.File.WriteAllText(persistentPath, string.Empty);
             FirstTimeLoading = false;
+            // Delete all previous audio files in the audio folder
         }
 
         // If file have stuff in it & loaded === false then -> use load data method to cache data and update loaded === true & delete the file
@@ -95,6 +96,8 @@ public class NewsAnchorSpeech : MonoBehaviour
                 writer.Write(Json);
                 Debug.Log("Saving Data at: ");
                 Debug.Log(SavePath);
+
+                // Download all the audio files in a seperate folder along the same path, yield to wait until its all downloaded
             }
         }
     }
@@ -112,7 +115,7 @@ public class NewsAnchorSpeech : MonoBehaviour
         StartCoroutine(DownloadAndPlayAudioSequentially());
     }
 
-    IEnumerator DownloadAndPlayAudioSequentially()
+    IEnumerator DownloadAndPlayAudioSequentially() // Get MP3 from file then delete it once its played, add wait time between speech
     {
         //1.Loop through each AudioClip
         for (int i = 0; i < TotalNewsTopics;)
